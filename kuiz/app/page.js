@@ -20,10 +20,10 @@ export default function Home() {
   });
 
   const buttonColors = {
-    'Sciences & Technologie': 'bg-blue-800',
+    'Sciences & Technologie': 'bg-green-800',
     'Art & Culture': 'bg-pink-800',
-    'Histoire & Géographie': 'bg-orange-800',
-    'Sport & Loisirs': 'bg-green-800',
+    'Histoire & Géographie': 'bg-blue-800',
+    'Sport & Loisirs': 'bg-orange-800',
     'Politique & Religion': 'bg-purple-800',
     'Société & Economie': 'bg-yellow-800',
   };
