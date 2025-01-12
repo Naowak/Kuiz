@@ -10,8 +10,25 @@ export default function Home() {
   const [score, setScore] = useState({ bonnes: 0, mauvaises: 0 });
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [previousQuestions, setPreviousQuestions] = useState(null);
+  const [categories, setCategories] = useState({
+    'Histoire & Géographie': true,
+    'Politique & Religion': true,
+    'Sport & Loisirs': true,
+    'Sciences & Technologie': true,
+    'Art & Culture': true,
+    'Société & Economie': true,
+  });
 
-  const colors = {
+  const buttonColors = {
+    'Sciences & Technologie': 'bg-blue-800',
+    'Art & Culture': 'bg-pink-800',
+    'Histoire & Géographie': 'bg-orange-800',
+    'Sport & Loisirs': 'bg-green-800',
+    'Politique & Religion': 'bg-purple-800',
+    'Société & Economie': 'bg-yellow-800',
+  };
+
+  const bgColors = {
     'Sciences & Technologie': 'bg-science-technologie',
     'Art & Culture': 'bg-art-culture',
     'Histoire & Géographie': 'bg-histoire-geographie',
@@ -42,15 +59,37 @@ export default function Home() {
     }, 1000);
   };
 
-  // Select a random question
+  // Toggle category selection
+  const toggleCategory = (category) => {
+    setCategories((prev) => {
+      let new_categories = { ...prev, [category]: !prev[category] };
+      if (Object.values(new_categories).every((val) => val === false)) {
+        new_categories = Object.keys(new_categories).reduce((acc, key) => {
+          acc[key] = true;
+          return acc;
+        }, {});
+      }
+      return new_categories;
+    });
+  };
+
+  // Select a random question from active categories
   const pickRandomQuestion = () => {
-    const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+    const activeCategories = Object.keys(categories).filter((cat) => categories[cat]);
+    const filteredQuestions = questions.filter((q) => activeCategories.includes(q.category));
+    
+    if (filteredQuestions.length === 0) {
+      alert("Aucune question disponible pour les catégories sélectionnées.");
+      return;
+    }
+
+    const randomQuestion = filteredQuestions[Math.floor(Math.random() * filteredQuestions.length)];
     const answers = ['a', 'b', 'c', 'd'].map((letter) => ({
       texte: randomQuestion[letter],
       correcte: letter === randomQuestion.r,
     }));
     setCurrentQuestion({
-      question: randomQuestion.q, 
+      question: randomQuestion.q,
       reponses: shuffleArray(answers),
       category: randomQuestion.category,
       source: randomQuestion.source,
@@ -63,11 +102,26 @@ export default function Home() {
   }, []);
 
   return (
-    <div className={`flex items-start pt-8 justify-center min-h-screen ${currentQuestion?.category ? colors[currentQuestion.category] : 'bg-white'}`}>
+    <div className={`flex items-start pt-8 justify-center min-h-screen ${currentQuestion?.category ? bgColors[currentQuestion.category] : 'bg-white'}`}>
 
       <div className="w-full max-w-md lg:max-w-lg p-2">
         {/* Titre */}
         <h1 className="text-center text-5xl font-bold text-black mb-8">Le Kuiz</h1>
+
+        {/* Boutons de catégories */}
+        <div className="flex flex-wrap justify-center gap-2 mb-8">
+          {Object.keys(categories).map((category) => (
+            <button
+              key={category}
+              onClick={() => toggleCategory(category)}
+              className={`p-2 rounded-lg text-white text-sm font-medium shadow-md transition-all ${
+                buttonColors[category]
+              } ${categories[category] ? 'opacity-100' : 'opacity-50'}`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
 
         {/* Question */}
         <p className="text-center font-bold text-xl lg:text-2xl mb-8 text-black text-3xl">
