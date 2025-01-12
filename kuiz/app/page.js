@@ -63,8 +63,9 @@ export default function Home() {
   return (
     <div className={`flex items-center justify-center min-h-screen ${currentQuestion?.category ? colors[currentQuestion.category] : 'bg-white'}`}>
       <div className="w-full max-w-md lg:max-w-lg p-2 space-y-12">
+        <h1 className="text-center text-5xl font-bold text-black">Le Kuiz</h1>
         {/* Question */}
-        <p className="text-center font-bold text-3xl mb-4 text-black text-3xl">
+        <p className="text-center font-bold text-2xl mb-4 text-black text-3xl">
           {currentQuestion?.question}
         </p>
         {/* Réponses */}
