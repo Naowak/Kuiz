@@ -2,12 +2,14 @@
 
 import questions from './question-reponse.json';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
 
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [score, setScore] = useState({ bonnes: 0, mauvaises: 0 });
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [previousQuestions, setPreviousQuestions] = useState(null);
 
   const colors = {
     'Sciences & Technologie': 'bg-science-technologie',
@@ -35,6 +37,7 @@ export default function Home() {
     // Affiche le feedback pendant 1 seconde
     setTimeout(() => {
       setSelectedAnswer(null);
+      setPreviousQuestions(currentQuestion);
       pickRandomQuestion(); // Choisit une nouvelle question
     }, 1000);
   };
@@ -50,6 +53,7 @@ export default function Home() {
       question: randomQuestion.q, 
       reponses: shuffleArray(answers),
       category: randomQuestion.category,
+      source: randomQuestion.source,
     });
   };
 
@@ -58,23 +62,25 @@ export default function Home() {
     pickRandomQuestion();
   }, []);
 
-  console.log(currentQuestion);
-
   return (
-    <div className={`flex items-center justify-center min-h-screen ${currentQuestion?.category ? colors[currentQuestion.category] : 'bg-white'}`}>
-      <div className="w-full max-w-md lg:max-w-lg p-2 space-y-12">
-        <h1 className="text-center text-5xl font-bold text-black">Le Kuiz</h1>
+    <div className={`flex items-start pt-8 justify-center min-h-screen ${currentQuestion?.category ? colors[currentQuestion.category] : 'bg-white'}`}>
+
+      <div className="w-full max-w-md lg:max-w-lg p-2">
+        {/* Titre */}
+        <h1 className="text-center text-5xl font-bold text-black mb-8">Le Kuiz</h1>
+
         {/* Question */}
-        <p className="text-center font-bold text-2xl mb-4 text-black text-3xl">
+        <p className="text-center font-bold text-xl lg:text-2xl mb-8 text-black text-3xl">
           {currentQuestion?.question}
         </p>
+
         {/* Réponses */}
-        <div className="space-y-4">
+        <div className="space-y-2 px-4 mb-6">
           {currentQuestion?.reponses.map((reponse, index) => (
               <button
                 key={index}
                 onClick={() => handleAnswer(index)}
-                className={`w-full p-3 rounded-lg transition-all text-black text-xl shadow-md ${
+                className={`w-full p-2 rounded-lg transition-all text-black text-xl shadow-md ${
                     selectedAnswer === index ? 
                       reponse.correcte ? 
                         'bg-green-500' 
@@ -89,11 +95,25 @@ export default function Home() {
             </button>
           ))}
         </div>
+
         {/* Counter */}
-        <div className="text-center mt-6 text-md text-gray-600">
+        <div className="text-center text-md text-gray-600">
           Bonnes réponses: {score.bonnes} <br/> 
           Mauvaises réponses: {score.mauvaises}
         </div>
+
+        {/* Floating Bubble button that Link to previous source */}
+        {previousQuestions && (
+          <Link
+            href={"https://fr.wikipedia.org/" + previousQuestions.source}
+            target="_blank"
+            rel="noreferrer"
+            className="fixed bottom-4 left-4 p-3 bg-white rounded-full shadow-md"
+          >
+            <h1 className='text-black'>Source ?</h1>
+          </Link>
+        )}
+
       </div>
     </div>
   );
